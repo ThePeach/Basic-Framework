@@ -28,7 +28,7 @@ class User {
 	}
 
 	/**
-	 * Logs out the user unsetting all variables
+	 * Logs out the user unsetting all variables, disabling all sessions (if any)
 	 */
 	public function logout() {
 
