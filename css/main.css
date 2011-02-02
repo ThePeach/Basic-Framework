@@ -1,0 +1,79 @@
+/* 
+    Document   : main
+    Created on : 01-Feb-2011, 22:54:46
+    Author     : Matteo 'Peach' Pescarin
+    Description:
+        Main stylesheet for the test login page.
+*/
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #333;
+    font-size: 16px;
+    font-family: Arial,sans-serif;
+    color: #fff;
+}
+a {
+    color: #FF8100;
+    font-weight: bold;
+}
+a:hover {
+    color: #FFA851;
+}
+label {
+    height: 1em;
+    width: 95px;
+    text-align: right;
+    margin-top: 5px;
+    float: left;
+}
+input {
+    height: 1em;
+    margin-top: 5px;
+    margin-left: 5px;
+}
+input[type='submit'] {
+    height: 2em;
+    margin-top: 1em;
+    margin-left: 60px;
+}
+
+#mainbar {
+    padding: .5em;
+    background-color: #555;
+    text-align: right;
+    border-bottom: 5px solid #ddd;
+}
+#mainbar ul {
+    list-style-type: none;
+    margin: 0px;
+}
+#mainbar ul li {
+    display: inline;
+    margin-left: 1em;
+}
+#screen {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: #000;
+    opacity: 0.7;
+    top: 0;
+}
+#loginbox, #registerbox {
+    position: absolute;
+    background-color: #111;
+    width: 300px;
+    border: 1px solid #FF8100;
+    padding: 1em;
+}
+#screen, #loginbox, #registerbox {
+    display: none;
+}
+#loginbox h1,
+#registerbox h1 {
+    text-align: center;
+    font-size: 1.5em;
+}
+

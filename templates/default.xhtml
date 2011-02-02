@@ -1,0 +1,38 @@
+<div id="mainbar">
+    <ul>
+        <li><a href="#" title="login">Login</a></li>
+        <li><a href="#" title="register">Register</a></li>
+    </ul>
+</div>
+<div id="screen"></div>
+
+<div id="loginbox">
+    <h1>Login</h1>
+    <div class="error"></div>
+    <form action="index.php" method="POST">
+        <label for="login">e-mail:</label>
+        <input name="login" type="text" />
+        <label for="pwd">Password:</label>
+        <input name="pwd" type="password" />
+        <input type="submit" value="Submit" />
+        <input type="submit" value="Close" />
+    </form>
+</div>
+<div id="registerbox">
+    <h1>Register</h1>
+    <div class="error"></div>
+    <form action="index.php" method="POST">
+        <label for="name">Name:</label>
+        <input name="name" type="text" value="My Name"/>
+        <label for="login">e-mail:</label>
+        <input name="login" type="text" value="user@domain.com"/>
+        <label for="cc">CC Num:</label>
+        <input name="cc" type="text" value="XXXX-XXXX-XXXX-XXXX"/>
+        <label for="pwd">Password:</label>
+        <input name="pwd" type="password" />
+        <label for="pwd2">Password(2):</label>
+        <input name="pwd2" type="password" />
+        <input type="submit" value="Submit" />
+        <input type="submit" value="Close" />
+    </form>
+</div>
