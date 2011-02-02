@@ -46,9 +46,10 @@ class Controller {
                 if (isset($_GET['verifyEmail'])) {
                     $this->actionVerifyEmail($_GET['verifyEmail']);
                 }
+            } else {
+                // default action
+                $this->actionDefault();
             }
-            // something else
-            $this->actionDefault();
         }
 
     }
@@ -73,15 +74,22 @@ class Controller {
             $this->_jsonResponse['result'] = $this->_user->verifyUserEmail($email);
         }
         echo json_encode($this->_jsonResponse);
+        exit();
     }
 
     /**
+     * Perform various steps to identify the user and verify he's in the db
      *
-     * @param <type> $email
-     * @param <type> $pwd
+     * @param string $email the user's email
+     * @param string $pwd   the has'd password
      */
     public function actionLogin($email, $pwd) {
-        // we must return the user name and some piece of content to be shown
+        try {
+            $result = $this->_user->login($email, $pwd);
+            $this->_jsonResponse['result'] = $result;
+        } catch (Exception $e) {
+            $this->_jsonResponse['error'] = $e->getMessage();
+        }
         echo json_encode($this->_jsonResponse);
     }
 
@@ -104,8 +112,9 @@ class Controller {
             } catch(Exception $e) {
                 // we don't really care what has really happened at this point
                 // since the user don't really want to be bothered
-                $this->_jsonResponse['error'] = 'Unable to register';
+                $this->_jsonResponse['error'] = $e->getMessage();
             }
+            $this->_jsonResponse['result'] = true;
         }
         // once the user is registered in the db
         // we give him greenlight as he was logged in

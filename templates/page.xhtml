@@ -5,12 +5,13 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <link rel="stylesheet" type="text/css" href="css/main.css" />
         <script src="js/jquery-1.5.min.js" type="text/javascript" ></script>
+        <script src="js/jquery.sha1.js" type="text/javascript" ></script>
         <script src="js/main.js" type="text/javascript" ></script>
         <script type="text/javascript">
 $(document).ready(function() {
     // we should check the main.js has been loaded
     if (T !== undefined) {
-        $('form').attr('onSubmit', 'javascript:T.sendForm(this.form); return false;');
+        //$('form').attr('onSubmit', 'javascript:T.sendForm(this.form); return false;');
         $('#mainbar a[title="login"]').attr('onclick', 'javascript:T.showBox("login"); return false;');
         $('#mainbar a[title="register"]').attr('onclick', 'javascript:T.showBox("register"); return false;');
         $('#loginbox input[value="Close"]').attr('onclick', 'javascript:T.closeBox("login"); return false;');

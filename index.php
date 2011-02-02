@@ -6,6 +6,7 @@ session_start();
 include_once 'includes/controller.php';
 include_once 'includes/view.php';
 include_once 'includes/user.php';
+include_once 'includes/mysql.php';
 // generic initialization
 $controller = new Controller();
 $controller->init();
