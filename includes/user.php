@@ -20,13 +20,6 @@ class User {
     }
     
 	/**
-	 * Authenticate against the db backend
-	 */
-	private function _authenticate() {
-        return;
-	}
-
-	/**
 	 * Login the user with login/pwd
 	 *
 	 * @param string $login the user login
@@ -47,13 +40,6 @@ class User {
         $this->_name = $results['name'];
         $this->_cc = $results['ccnumber'];
         return $results;
-	}
-
-	/**
-	 * Logs out the user unsetting all variables, disabling all sessions (if any)
-	 */
-	public function logout() {
-
 	}
 
     /**
@@ -87,23 +73,50 @@ class User {
         }
     }
 
+    /**
+     * Checks if the email sent is already in place to avoid errors on INSERT
+     *
+     * @param string $email the email to be verified
+     * 
+     * @return bool whether the user is already present in the db or not
+     */
     public function verifyUserEmail($email) {
-        $sql = 'SELECT COUNT(email) FROM user';
-        return (bool)$this->_db->queryScalar($sql);
+        $sql = 'SELECT COUNT(email) FROM user WHERE email="' . $email . '"';
+        return ($this->_db->queryScalar($sql) == 1) ? false : true;
     }
 
+    /**
+     * getter for $this->_name
+     *
+     * @return string
+     */
 	public function getName() {
 		return $this->_name;
 	}
 
+    /**
+     * getter for $this->_email
+     *
+     * @return string
+     */
 	public function getEmail() {
 		return $this->_email;
 	}
 
+    /**
+     * getter for $this->_pwd
+     *
+     * @return string
+     */
 	public function getPassword() {
 		return $this->_pwd;
 	}
 
+    /**
+     * getter for $this->_pwd
+     *
+     * @return string
+     */
 	public function getCrediCard() {
 		return $this->_pwd;
 	}

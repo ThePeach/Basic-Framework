@@ -1,12 +1,23 @@
 // setup our own namespace to store stuff in
 var T = {};
 T.user = {};
+/**
+ * user details to be held internally
+ */
 T.user.name = null;
 T.user.email = null;
 T.user.cc   = null;
+/**
+ * contains the current action: login or register
+ */
 T.currentAction = null;
+/**
+ * contains the default mainbar html
+ */
 T.mainbar = null;
-
+/**
+ * this function will popup the login/register box
+ */
 T.showBox = function(box) {
     var boxID = '#'+box+'box';
     T.currentAction = box;
@@ -36,8 +47,9 @@ T.showBox = function(box) {
             $(boxID+' input[name="login"]').attr('style','border: 0px;');
         }
         // if we are registering ensure a couple more things are ok before submitting
-        if (box === 'register') {
-            if ($(boxID+' input[name="cc"]').val() === '') {
+        if (T.currentAction === 'register') {
+            if ($(boxID+' input[name="cc"]').val() === ''
+                || $(boxID+' input[name="cc"]').val().length != 16) {
                 $(boxID+' input[name="cc"]').attr('style','border: 1px solid red;');
                 allFine = false;
             } else {
@@ -66,7 +78,7 @@ T.showBox = function(box) {
         // now compose the post fields to be sent
         data = data+'&login='+$(boxID+' input[name="login"]').val();
         data = data+'&pwd='+hashPwd;
-        if (box === 'register') {
+        if (T.currentAction === 'register') {
             data = data+'&user='+$(boxID+' input[name="name"]').val();
             data = data+'&cc='+$(boxID+' input[name="cc"]').val();
         }
@@ -75,24 +87,44 @@ T.showBox = function(box) {
             $(boxID+' .error').html('Please correct the errors')
         } else {
             $(boxID+' .error').html('');
+            // saving what can be saved
             T.user.email = $(boxID+' input[name="login"]').val();
+            if (T.currentAction === 'register') {
+                T.user.cc = $(boxID+' input[name="name"]').val();
+                T.user.cc = $(boxID+' input[name="cc"]').val();
+            }
             $.post('index.php', data, function(success) {
-                // replace the mainbar with something more meaningful
-                T.user.name = success.result.name;
-                T.user.cc = success.result.ccnumber;
-                T.welcomeUser();
-                // remove the popup box
-                T.closeBox(T.currentAction);
+                // verify the returned json contains no errors otherwise act properly
+                if (success.error !== null) {
+                    $('#'+T.currentAction+'box .error').html(success.error);
+                } else {
+                    // saving user and cc
+                    if (T.currentAction === 'login') {
+                        T.user.name = success.result.name;
+                        T.user.cc = success.result.ccnumber;
+                    }
+                    // replace the mainbar with something more meaningful
+                    T.welcomeUser();
+                    // remove the popup box
+                    T.closeBox(T.currentAction);
+                }
             }, 'json');
         }
         return false;
     });
 };
+/**
+ * This function will close the box
+ */
 T.closeBox = function(box) {
     $('#'+box+'box').hide(0, function() {
         $('#screen').hide();
     });
 };
+/**
+ * This function will add a greeting to the user and substitute the
+ * content of the mainbar
+ */
 T.welcomeUser = function() {
     // save content of mainbar
     if (null === T.mainbar) {
@@ -103,6 +135,9 @@ T.welcomeUser = function() {
     $('#mainbar li a').attr('title','logout');
     $('#mainbar li a').attr('onClick','javascript:T.logout(); return false;');
 }
+/**
+ * Used to logout the user uninitialising all the variables held internally
+ */
 T.logout = function() {
     // unregister user
     T.user.name = null;

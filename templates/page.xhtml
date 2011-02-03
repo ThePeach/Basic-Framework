@@ -11,7 +11,6 @@
 $(document).ready(function() {
     // we should check the main.js has been loaded
     if (T !== undefined) {
-        //$('form').attr('onSubmit', 'javascript:T.sendForm(this.form); return false;');
         $('#mainbar a[title="login"]').attr('onclick', 'javascript:T.showBox("login"); return false;');
         $('#mainbar a[title="register"]').attr('onclick', 'javascript:T.showBox("register"); return false;');
         $('#loginbox input[value="Close"]').attr('onclick', 'javascript:T.closeBox("login"); return false;');

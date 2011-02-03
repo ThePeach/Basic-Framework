@@ -30,6 +30,10 @@ class Mysql {
         }
     }
 
+    /**
+     * Disconnects the current connection, currently not used since it will
+     * be dropped automatically at the end of the script
+     */
     public function disconnect() {
         mysql_close($this->_connection);
     }
@@ -55,15 +59,22 @@ class Mysql {
      * This will perform an SQL query to the db
      *
      * @param string $sql the SQL statement to execute
-     * @return false|array of results or false in case something went bad
+     *
+     * @return mixed the array containing the results of a select or a boolean
+     *               to indicate the status of the operation 
      */
     public function query($sql) {
         $result = $this->_realQuery($sql);
         if (!$result) {
             return false;
         }
-        $arrayResults = mysql_fetch_assoc($result);
-        mysql_free_result($result);
+        // in case the result is coming from a SELECT
+        if ($result !== true) {
+            $arrayResults = mysql_fetch_assoc($result);
+            mysql_free_result($result);
+        } else {
+            $arrayResults = true;
+        }
         return $arrayResults;
     }
 
@@ -71,6 +82,7 @@ class Mysql {
      * This will query the db for real
      *
      * @param string $sql the SQL statement to execute
+     * 
      * @return mixed the mysql resource object
      */
     private function _realQuery($sql) {

@@ -94,18 +94,20 @@ class Controller {
     }
 
     /**
+     * Register the user within the database performing several additional
+     * steps to ensure the data sent is valid
      *
-     * @param <type> $email
-     * @param <type> $pwd
-     * @param <type> $user
-     * @param <type> $cc
+     * @param string $email the user's email
+     * @param string $pwd   the has'd password
+     * @param string $user  the user's name
+     * @param int    $cc    the credit card number as an integer
      */
     public function actionRegister($email, $pwd, $user, $cc) {
         // we need to sanitise the input before sending it to the db
-        if (filter_var($email, FILTER_VALIDATE_EMAIL)
-            && filter_var($pwd, FILTER_SANITIZE_STRING)
-            && filter_var($user, FILTER_SANITIZE_STRING)
-            && filter_var($cc, FILTER_VALIDATE_INT)
+        if (filter_var((string)$email, FILTER_VALIDATE_EMAIL)
+            || filter_var($pwd, FILTER_SANITIZE_STRING)
+            || filter_var($user, FILTER_SANITIZE_STRING)
+            || filter_var($cc, FILTER_VALIDATE_INT)
         ) {
             try {
                 $this->_user->register($email, $pwd, $user, $cc);
@@ -115,6 +117,8 @@ class Controller {
                 $this->_jsonResponse['error'] = $e->getMessage();
             }
             $this->_jsonResponse['result'] = true;
+        } else {
+            $this->_jsonResponse['error'] = 'Wrong parameters passed';
         }
         // once the user is registered in the db
         // we give him greenlight as he was logged in
@@ -122,7 +126,9 @@ class Controller {
     }
 
     /**
-     * This function outputs the view
+     * This function outputs the view and adds relevant headers to it
+     *
+     * @param string $template the contente template to be rendered
      */
     private function render($template) {
         $this->_view->assembleTemplate($template, self::$_layout);
