@@ -1,6 +1,35 @@
 <?php
 
-Class View {
+/**
+ * The view is actually using an inline replace method for templates.
+ * Pros:
+ *  - keep each template as clean as possible
+ *  - separate markup from logic
+ *  - avoid interpretation of any piece of code
+ *  - provides content to AJAX easily
+ *
+ * Cons:
+ *  - can have only one template per page (given by {CONTENT})
+ *  - inhibit interpretation of code
+ *  - prohibit iteration of templates of omogeneous content
+ *  - creates the need of creating a const variable
+ *  - creates the need of adapting the template accordingly
+ *
+ * This could obviously have been improved by removing the need to create a
+ * const variable and by making the code an auto generated class.
+ *
+ * **EXAMPLE**
+ * $view = new View();
+ * // assign a title to the page (substituting {TITLE}
+ * $view->assign(View::TITLE, 'My test page');
+ * // inserts content.xhtml into page.xhtml where {CONTENT} is
+ * $view->assembleTemplate('content', 'page');
+ * // outputs the view
+ * echo $view;
+ *
+ */
+Class View
+{
     const CONTENT = '{CONTENT}';
     const TITLE   = '{TITLE}';
     const TPLDIR  = 'templates/';
@@ -11,6 +40,9 @@ Class View {
 
     /**
      * This function assign the requested template
+     *
+     * @param string $template the name of the template to be included
+     * @param string $layout   the name of the layout to be used as wrapper
      */
     public function assembleTemplate($template, $layout) {
         if (null === $this->_page) {
@@ -22,6 +54,18 @@ Class View {
             array_keys($this->_tokensValues),
             $this->_tokensValues
         );
+    }
+
+    /**
+     * assigns certain tokens to parts of the page
+     *
+     * @param string $token   the token to be used
+     * @param string $content the content to be assigned to the token
+     */
+    public function assign($token, $content) {
+        // FIXME we should do something here to ensure it does not try to assign
+        // the content to non existing tokens... maybe
+        $this->_tokensValues[$token] = $content;
     }
 
     /**
@@ -47,18 +91,6 @@ Class View {
         // we should probably ensure the tokens are there when we start substituting them
 
         $this->_page = str_replace($token, $content, $this->_page);
-    }
-
-    /**
-     * assigns certain tokens to parts of the page
-     *
-     * @param string $token   the token to be used
-     * @param string $content the content to be assigned to the token
-     */
-    public function assign($token, $content) {
-        // FIXME we should do something here to ensure it does not try to assign
-        // the content to non existing tokens... maybe
-        $this->_tokensValues[$token] = $content;
     }
 
     /**

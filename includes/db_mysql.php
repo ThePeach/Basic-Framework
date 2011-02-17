@@ -2,7 +2,8 @@
 
 /**
  * This is the Mysql object used to connect and query the db.
- * Just a really simple level of abstraction above the db.
+ * Just a really simple level of abstraction above a Mysql database.
+ * All configuration is contained in its private variables.
  */
 class Mysql {
     private $_db   = 'test';

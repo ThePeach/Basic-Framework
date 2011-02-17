@@ -1,22 +1,40 @@
 <?php
 
 /**
- * The User model
+ * The User model represents the database table for the user
+ * The password for logging in/registering is expected to be already hashed
+ * (at the moment we are using sha256).
+ * We are not doing any salting or scrambling of the password.
+ *
+ * **EXAMPLE**
+ * $user = new User();
+ * $successful = $user->login($email, $password);
+ * if ($successful) {
+ *   // do something
+ * } else {
+ *   // register user
+ *   try {
+ *      $user->register($email, $password, $name, $cc);
+ *   } catch (Exception $e) {
+ *      // behave accordingly
+ *   }
+ * }
+ *
  */
-class User {
+class User extends Model
+{
 	private $_name  = 'visitor';
 	private $_email = null;
 	private $_pwd   = null;
 	private $_cc    = null;
-    private $_db;
 
     /**
-     * Public overridden constructor
+     * returns the name of table represented by the model
+     *
+     * @return string
      */
-    public function __construct() {
-        $this->_db = new Mysql();
-        // here we can have an exception and we should handle it properly
-        $this->_db->connect();
+    public function tableName() {
+        return 'user';
     }
     
 	/**
@@ -28,8 +46,9 @@ class User {
 	 * @return true|false whether the login has been succesfull or not
 	 */
 	public function login($login, $pwd) {
-        $sql = 'SELECT name, ccnumber FROM user WHERE email="' . $login . '" AND password="' . $pwd . '"';
-        $results = $this->_db->query($sql);
+        $sql = 'SELECT name, ccnumber FROM '.$this->tableName();
+        $sql .= ' WHERE email="' . $login . '" AND password="' . $pwd . '"';
+        $results = $this->query($sql);
         // failed login
         if (!$results) {
             throw new Exception('Wrong email or password', 500);
@@ -54,21 +73,21 @@ class User {
      */
     public function register($email, $pwd, $user, $cc) {
         // verify email is not already present in the db
-        if (!$this->verifyUserEmail($email)) {
-           throw new Exception('Duplicated email found', 500); 
+        if (!$this->userExists($email)) {
+           throw new Exception('User already existing', 500);
         }
         $this->_email = $email;
         $this->_pwd   = $pwd;
         $this->_name  = $user;
         $this->_cc    = $cc;
         // we want to save the data into the db
-        $sql = 'INSERT INTO user VALUES (';
+        $sql = 'INSERT INTO '.$this->tableName().' VALUES (';
         $sql .= '"' . $email . '", ';
         $sql .= '"' . $user . '", ';
         $sql .= '"' . $pwd . '", ';
         $sql .= $cc . ')';
         // insert the values and espect everything's fine
-        if (!$this->_db->query($sql)) {
+        if (!$this->query($sql)) {
             throw new Exception('Unable to register user', 500);
         }
     }
@@ -80,9 +99,10 @@ class User {
      * 
      * @return bool whether the user is already present in the db or not
      */
-    public function verifyUserEmail($email) {
-        $sql = 'SELECT COUNT(email) FROM user WHERE email="' . $email . '"';
-        return ($this->_db->queryScalar($sql) == 1) ? false : true;
+    public function userExists($email) {
+        $sql = 'SELECT COUNT(email) FROM '.$this->tableName();
+        $sql .= ' WHERE email="' . $email . '"';
+        return ($this->queryScalar($sql) == 1) ? false : true;
     }
 
     /**

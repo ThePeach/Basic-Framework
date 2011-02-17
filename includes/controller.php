@@ -1,15 +1,28 @@
 <?php
 
 /**
- * This is the controller
+ * This is the controller.
+ * Its basic usage is very simple and all the logic for routing the call
+ * is living inside of the init() function.
+ * Actions instead will contain the real code for expressing what is needed.
+ * Actions must end with a call to one of the (private) render functions.
+ * 
+ * Although we can have an external Request and Response together with a Route
+ * object as Zend does, this seems to be an overkill in this simple example.
+ *
+ * **EXAMPLE**
+ * $controller = new Controller();
+ * $controller->init();
  */
-class Controller {
+class Controller
+{
     private $_user = null;
     private $_view = null;
     private $_jsonResponse = array(
         'result' => false,
         'error'  => null,
     );
+    // we can override the main layout before outputting everything
     public static $_layout = 'page';
 
     /**
@@ -71,17 +84,16 @@ class Controller {
      */
     public function actionVerifyEmail($email) {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->_jsonResponse['result'] = $this->_user->verifyUserEmail($email);
+            $this->_jsonResponse['result'] = $this->_user->userExists($email);
         }
-        echo json_encode($this->_jsonResponse);
-        exit();
+        echo $this->renderJson();
     }
 
     /**
      * Perform various steps to identify the user and verify he's in the db
      *
      * @param string $email the user's email
-     * @param string $pwd   the has'd password
+     * @param string $pwd   the hash'd password
      */
     public function actionLogin($email, $pwd) {
         try {
@@ -90,7 +102,7 @@ class Controller {
         } catch (Exception $e) {
             $this->_jsonResponse['error'] = $e->getMessage();
         }
-        echo json_encode($this->_jsonResponse);
+        echo $this->renderJson();
     }
 
     /**
@@ -122,7 +134,7 @@ class Controller {
         }
         // once the user is registered in the db
         // we give him greenlight as he was logged in
-        echo json_encode($this->_jsonResponse);
+        echo $this->renderJson();
     }
 
     /**
@@ -136,6 +148,19 @@ class Controller {
         header('Content-Type', 'text/html, charset=UTF-8');
         // brutally display the page
         echo $this->_view;
+    }
+
+    /**
+     * This will output the json response with the relevant headers
+     *
+     * @param array $response the response to be encoded
+     */
+    private function renderJson($response = null) {
+        header('Content-Type', 'application/json, charset=UTF-8');
+        if ($response) {
+            echo json_encode($response);
+        }
+        echo json_encode($this->_jsonResponse);
     }
 
 }

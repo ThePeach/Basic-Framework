@@ -90,7 +90,7 @@ T.showBox = function(box) {
             // saving what can be saved
             T.user.email = $(boxID+' input[name="login"]').val();
             if (T.currentAction === 'register') {
-                T.user.cc = $(boxID+' input[name="name"]').val();
+                T.user.name = $(boxID+' input[name="name"]').val();
                 T.user.cc = $(boxID+' input[name="cc"]').val();
             }
             $.post('index.php', data, function(success) {
@@ -141,6 +141,7 @@ T.welcomeUser = function() {
 T.logout = function() {
     // unregister user
     T.user.name = null;
+    T.user.email = null;
     T.user.cc = null;
     $('#mainbar').html(T.mainbar);
 };
