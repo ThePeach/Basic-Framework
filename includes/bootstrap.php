@@ -1,13 +1,16 @@
 <?php
 
-// include all files in current directory
-$resource = opendir('includes');
-while(false !== ($file = readdir($resource))) {
-    if ($file !== '.' && $file !== '..') {
-        include_once($file);
+// we will be using scandir to get files in alphabetical order
+// NOTE: this is suboptimal since it will not understand the file deps
+$files = scandir(dirname(__FILE__));
+foreach ($files as $file) {
+    if ($file !== '.'
+        && $file !== '..'
+        && $file !== 'bootstrap.php')
+    {
+        include_once $file;
     }
 }
-closedir($resource);
-unset($resource);
+unset($files);
 
 ?>
