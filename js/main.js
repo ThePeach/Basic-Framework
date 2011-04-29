@@ -1,7 +1,8 @@
+/*global $ */
 // // setup our own namespace to store stuff in
 var T = T || {};
 // The user
-T.user = (function() {
+T.user = (function () {
     var animSpeed = 200,
         loginBox = {},
         registerBox = {},
@@ -9,7 +10,7 @@ T.user = (function() {
         mainBar = {};
 
     function login() {
-        screen.fadeIn(animSpeed, function() {
+        screen.fadeIn(animSpeed, function () {
             loginBox.fadeIn(animSpeed);
         });
     }
@@ -19,7 +20,7 @@ T.user = (function() {
 //    }
 //    
     function register() {
-        screen.fadeIn(animSpeed, function() {
+        screen.fadeIn(animSpeed, function () {
             registerBox.fadeIn(animSpeed);
         });
     }
