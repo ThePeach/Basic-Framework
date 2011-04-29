@@ -1,12 +1,91 @@
-// setup our own namespace to store stuff in
-var T = {};
-T.user = {};
-/**
- * user details to be held internally
- */
-T.user.name = null;
-T.user.email = null;
-T.user.cc   = null;
+// // setup our own namespace to store stuff in
+var T = T || {};
+// The user
+T.user = (function() {
+    var animSpeed = 200,
+        loginBox = {},
+        registerBox = {},
+        screen = {},
+        mainBar = {};
+
+    function login() {
+        screen.fadeIn(animSpeed, function() {
+            loginBox.fadeIn(animSpeed);
+        });
+    }
+//    
+//    function logout() {        
+//        // unregister user
+//    }
+//    
+    function register() {
+        screen.fadeIn(animSpeed, function() {
+            registerBox.fadeIn(animSpeed);
+        });
+    }
+    
+//    function loggedIn() {
+//        if (name === null) {
+//            return false;
+//        }
+//        return true;
+//    }
+    
+    function init() {
+        // init all the different vars
+        mainBar = $('#mainbar');
+        screen = $('#screen');
+        loginBox = $('#loginbox');
+        registerBox = $('#registerbox');
+        
+        var loginBoxProperties = {
+                'top': (screen.height() - loginBox.height()) / 2,
+                'left': (screen.width() - loginBox.width()) / 2
+            },
+            registerBoxProperties = {
+                'top': (screen.height() - registerBox.height()) / 2,
+                'left': (screen.width() - registerBox.width()) / 2
+            };
+            
+        // position the login box in the center of the screen
+        loginBox.css(loginBoxProperties);
+        registerBox.css(registerBoxProperties);
+        
+        mainBar.find('a[title="login"]').click(login);
+        mainBar.find('a[title="register"]').click(register);
+    }
+    
+    /** expose methods */
+    return {
+        'init': init
+    };
+}());
+
+T.loginBox = (function() {
+    
+}());
+
+T.registerBox = (function() {
+    
+}());
+
+T.popupBox = (function() {
+    var errorMessage = null,
+        top = 0,
+        left = 0;
+    var show = function(box) {
+    }
+    var close = function(box) {
+        $('#'+box+'box').hide(0, function() {
+            $('#screen').hide();
+        });
+    }
+    return {
+        'show': 'show',
+        'close': 'close'
+    }
+}());
+
 /**
  * contains the current action: login or register
  */
@@ -114,14 +193,6 @@ T.showBox = function(box) {
     });
 };
 /**
- * This function will close the box
- */
-T.closeBox = function(box) {
-    $('#'+box+'box').hide(0, function() {
-        $('#screen').hide();
-    });
-};
-/**
  * This function will add a greeting to the user and substitute the
  * content of the mainbar
  */
@@ -135,13 +206,3 @@ T.welcomeUser = function() {
     $('#mainbar li a').attr('title','logout');
     $('#mainbar li a').attr('onClick','javascript:T.logout(); return false;');
 }
-/**
- * Used to logout the user uninitialising all the variables held internally
- */
-T.logout = function() {
-    // unregister user
-    T.user.name = null;
-    T.user.email = null;
-    T.user.cc = null;
-    $('#mainbar').html(T.mainbar);
-};
