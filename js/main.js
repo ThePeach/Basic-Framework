@@ -1,29 +1,64 @@
 /*global $ */
 // // setup our own namespace to store stuff in
 var T = T || {};
+
+/* NOTE: probably to be kept in a separate file */
+T.gui = (function () {
+    // box constructor
+    function box(node) {
+//        console.log('box constructor');
+        this.domNode = node;
+        this.mask = $('#screen');
+        this.setPosition();
+    }
+    // box prototype
+    box.prototype = (function () {
+        this.nodeProperties = {};
+        function showIn() {
+            var animSpeed = 'fast',
+                node = this.domNode;
+            this.setPosition();
+            this.mask.fadeIn(animSpeed, function () {
+                node.slideDown(animSpeed);
+            });
+        }
+        function setPosition() {
+            this.nodeProperties = {
+                'top': (this.mask.height() - this.domNode.height()) / 2,
+                'left': (this.mask.width() - this.domNode.width()) / 2
+            };
+            this.domNode.css(this.nodeProperties);
+        }
+        return {
+            showIn: showIn,
+            setPosition: setPosition
+        }
+    }());
+    
+    return {
+        'box': box
+    }
+}());
+    
+
 // The user
 T.user = (function () {
     var animSpeed = 200,
         loginBox = {},
         registerBox = {},
         screen = {},
-        mainBar = {};
+        mainBar = {},
+        box = T.gui.box;
 
-    function login() {
-        screen.fadeIn(animSpeed, function () {
-            loginBox.fadeIn(animSpeed);
-        });
-    }
+//    function login() {
+//    }
 //    
 //    function logout() {        
 //        // unregister user
 //    }
-//    
-    function register() {
-        screen.fadeIn(animSpeed, function () {
-            registerBox.fadeIn(animSpeed);
-        });
-    }
+////    
+//    function register() {
+//    }
     
 //    function loggedIn() {
 //        if (name === null) {
@@ -35,39 +70,16 @@ T.user = (function () {
     function init() {
         // init all the different vars
         mainBar = $('#mainbar');
-        screen = $('#screen');
-        loginBox = $('#loginbox');
-        registerBox = $('#registerbox');
-        
-        var loginBoxProperties = {
-                'top': (screen.height() - loginBox.height()) / 2,
-                'left': (screen.width() - loginBox.width()) / 2
-            },
-            registerBoxProperties = {
-                'top': (screen.height() - registerBox.height()) / 2,
-                'left': (screen.width() - registerBox.width()) / 2
-            };
-            
-        // position the login box in the center of the screen
-        loginBox.css(loginBoxProperties);
-        registerBox.css(registerBoxProperties);
-        
-        mainBar.find('a[title="login"]').click(login);
-        mainBar.find('a[title="register"]').click(register);
+        loginBox = new box($('#loginbox'));
+        registerBox = new box($('#registerbox'));
+        mainBar.find('a[title="login"]').click(function () { loginBox.showIn(); });
+        mainBar.find('a[title="register"]').click(function () { registerBox.showIn(); });
     }
     
     /** expose methods */
     return {
         'init': init
     };
-}());
-
-T.loginBox = (function() {
-    
-}());
-
-T.registerBox = (function() {
-    
 }());
 
 T.popupBox = (function() {
