@@ -5,14 +5,14 @@ var T = T || {};
 /* NOTE: probably to be kept in a separate file */
 T.gui = (function () {
     // box constructor
-    function box(node) {
+    function Box(node) {
 //        console.log('box constructor');
         this.domNode = node;
         this.mask = $('#screen');
         this.setPosition();
     }
     // box prototype
-    box.prototype = (function () {
+    Box.prototype = (function () {
         var animSpeed = 'fast';
         // node position properties
         this.nodeProperties = {};
@@ -53,13 +53,13 @@ T.gui = (function () {
             show: show,
             hide: hide,
             setPosition: setPosition
-        }
+        };
     }());
     
     // expose widgets
     return {
-        'box': box
-    }
+        'Box': Box
+    };
 }());
     
 
@@ -70,7 +70,7 @@ T.user = (function () {
         registerBox = {},
         mainBar = {},
         // import box module
-        box = T.gui.box;
+        Box = T.gui.Box;
 
     /**
      * login function, will perform validation and authentication
@@ -95,8 +95,8 @@ T.user = (function () {
     function init() {
         // init all the different vars
         mainBar = $('#mainbar');
-        loginBox = new box($('#loginbox'));
-        registerBox = new box($('#registerbox'));
+        loginBox = new Box($('#loginbox'));
+        registerBox = new Box($('#registerbox'));
         mainBar.find('a[title="login"]').click(function () { loginBox.show(); });
         mainBar.find('a[title="register"]').click(function () { registerBox.show(); });
         loginBox.domNode.find('.close a').click(function () { loginBox.hide(); });
