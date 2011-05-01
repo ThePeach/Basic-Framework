@@ -101,6 +101,21 @@ input[type='submit'] {
     background-position: bottom left;
 }
 
+/* close box button */
+.close {
+    position: absolute;
+    right: 1em;
+    top: 1em;
+}
+.close a {
+    padding: 1px 4px;
+    color: #000;
+    background-color: #FF8100;
+    text-decoration: none;
+}
+.close a:hover {
+    background-color: #FFA851;
+}
 .warn {
     margin: 1em;
     color: #FF8100;

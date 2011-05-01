@@ -1,5 +1,5 @@
 /*global $ */
-// // setup our own namespace to store stuff in
+// setup our own namespace to store stuff in
 var T = T || {};
 
 /* NOTE: probably to be kept in a separate file */
@@ -13,8 +13,14 @@ T.gui = (function () {
     }
     // box prototype
     box.prototype = (function () {
+        var animSpeed = 'fast';
+        // node position properties
         this.nodeProperties = {};
-        function showIn() {
+        // public functions 
+        /**
+         * Shows the box after greying out the background mask
+         */
+        function show() {
             var animSpeed = 'fast',
                 node = this.domNode;
             this.setPosition();
@@ -22,6 +28,19 @@ T.gui = (function () {
                 node.slideDown(animSpeed);
             });
         }
+        /**
+         * Hides the box and then fades out the background mask
+         */
+        function hide() {
+            var mask = this.mask;
+            this.domNode.slideUp(animSpeed, function () {
+                mask.fadeOut(animSpeed);
+            });
+        }
+        // private functions
+        /**
+         * Recalculate the position of the box and applies the style to it
+         */
         function setPosition() {
             this.nodeProperties = {
                 'top': (this.mask.height() - this.domNode.height()) / 2,
@@ -29,12 +48,15 @@ T.gui = (function () {
             };
             this.domNode.css(this.nodeProperties);
         }
+        // expose public methods
         return {
-            showIn: showIn,
+            show: show,
+            hide: hide,
             setPosition: setPosition
         }
     }());
     
+    // expose widgets
     return {
         'box': box
     }
@@ -43,15 +65,18 @@ T.gui = (function () {
 
 // The user
 T.user = (function () {
-    var animSpeed = 200,
-        loginBox = {},
+    // private variable definition
+    var loginBox = {},
         registerBox = {},
-        screen = {},
         mainBar = {},
+        // import box module
         box = T.gui.box;
 
-//    function login() {
-//    }
+    /**
+     * login function, will perform validation and authentication
+     */
+    function login() {
+    }
 //    
 //    function logout() {        
 //        // unregister user
@@ -72,8 +97,10 @@ T.user = (function () {
         mainBar = $('#mainbar');
         loginBox = new box($('#loginbox'));
         registerBox = new box($('#registerbox'));
-        mainBar.find('a[title="login"]').click(function () { loginBox.showIn(); });
-        mainBar.find('a[title="register"]').click(function () { registerBox.showIn(); });
+        mainBar.find('a[title="login"]').click(function () { loginBox.show(); });
+        mainBar.find('a[title="register"]').click(function () { registerBox.show(); });
+        loginBox.domNode.find('.close a').click(function () { loginBox.hide(); });
+        registerBox.domNode.find('.close a').click(function () { registerBox.hide(); });
     }
     
     /** expose methods */
