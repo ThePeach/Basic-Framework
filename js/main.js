@@ -2,93 +2,6 @@
 // setup our own namespace to store stuff in
 var T = T || {};
 
-/* NOTE: probably to be kept in a separate file */
-/**
- * User Interface handling stuff
- */
-T.gui = (function () {
-    // box constructor
-    function Box(node) {
-//        console.log('box constructor');
-        this.domNode = node;
-        this.mask = $('#screen');
-        this.errorMsg = '';
-//        this.setPosition();
-    }
-    // box prototype
-    Box.prototype = (function () {
-        var animSpeed = 'fast';
-        // node position properties
-        this.nodeProperties = {};
-        // public functions 
-        /**
-         * Shows the box after greying out the background mask
-         */
-        function show() {
-            var animSpeed = 'fast',
-                node = this.domNode;
-            this.setPosition();
-            this.mask.fadeIn(animSpeed, function () {
-                node.slideDown(animSpeed);
-            });
-        }
-        /**
-         * Hides the box and then fades out the background mask
-         */
-        function hide() {
-            var mask = this.mask;
-            this.domNode.slideUp(animSpeed, function () {
-                mask.fadeOut(animSpeed);
-            });
-        }
-        /**
-         * displays the error message
-         */
-        function displayError(errorMsg) {
-            if (errorMsg !== '' || errorMsg !== undefined) {
-                this.errorMsg = errorMsg;
-            } else if (errorMsg === false) {
-                this.errorMsg = '';
-            } else {
-                return;
-            }
-            this.domNode.children('.error').html() = this.errorMsg;                
-        }
-        // private functions
-        /**
-         * Recalculate the position of the box and applies the style to it
-         */
-        function setPosition() {
-            this.nodeProperties = {
-                'top': (this.mask.height() - this.domNode.height()) / 2,
-                'left': (this.mask.width() - this.domNode.width()) / 2
-            };
-            this.domNode.css(this.nodeProperties);
-        }
-        // expose public methods
-        return {
-            show: show,
-            hide: hide,
-            displayError: displayError,
-            setPosition: setPosition
-        };
-    }());
-    
-    // expose widgets
-    return {
-        'Box': Box
-    };
-}());
-
-/**
- * Utilities
- */
-T.utils = (function () {
-    function Validator() {
-        
-    }
-});
-
 /**
  * User
  */
@@ -98,20 +11,50 @@ T.user = (function () {
         registerBox = {},
         mainBar = {},
         // import box module
-        Box = T.gui.Box;
+        Box = T.gui.Box,
+        // import validator
+        Validator = T.utils.Validator;
+    
+    /**
+     * Parses and Validates the form and submits the data
+     * 
+     * TODO: this has to moved off here
+     */
+    function parseAndValidateForm(domNode, box) {
+        var retData = {};
+        $(domNode).find('input').each(function () {
+            var curField = $(this);
+            if (curField.attr('type') !== 'submit') {
+                retData[curField.attr('name')] = curField.attr('value');
+            }
+        });
 
+        if (box.validator.validate(retData)) {
+            console.log('we can now fetch the data and return');
+        } else {
+            // update the error message box
+            box.displayMsgs();
+        }
+        return retData;
+    }
     /**
      * login function, will perform validation and authentication
      */
     function login() {
+        // parse input fields and validate them
+        parseAndValidateForm(this, loginBox);
+        return false;
     }
 //    
 //    function logout() {        
 //        // unregister user
 //    }
-////    
-//    function register() {
-//    }
+    /**
+     * register function, will perform validation
+     */
+    function register() {
+        return false;
+    }
     
 //    function loggedIn() {
 //        if (name === null) {
@@ -121,14 +64,23 @@ T.user = (function () {
 //    }
     
     function init() {
-        // init all the different vars
         mainBar = $('#mainbar');
         loginBox = new Box($('#loginbox'));
         registerBox = new Box($('#registerbox'));
-        mainBar.find('a[title="login"]').click(function () { loginBox.show(); });
-        mainBar.find('a[title="register"]').click(function () { registerBox.show(); });
-        loginBox.domNode.find('.close a').click(function () { loginBox.hide(); });
-        registerBox.domNode.find('.close a').click(function () { registerBox.hide(); });
+        
+        mainBar.find('a[title="login"]').click(function () {loginBox.show();});
+        mainBar.find('a[title="register"]').click(function () {registerBox.show();});
+        // loginBox related setup
+        loginBox.domNode.find('.close a').click(function () {loginBox.hide();});
+        loginBox.validator = new Validator();
+        loginBox.validator.config = {
+            'login': 'isEmail',
+            'pwd': 'isNotEmpty'
+        };
+        loginBox.domNode.children('form').submit(login);
+        // registerBox related setup
+        registerBox.domNode.find('.close a').click(function () {registerBox.hide();});
+        registerBox.domNode.children('form').submit(register);
     }
     
     /** expose methods */
