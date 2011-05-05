@@ -103,7 +103,6 @@ T.utils = (function () {
     
     // expose API
     return {
-        'Validator': Validator,
-        'passwdEncode': passwdEncode
+        'Validator': Validator
     };
 }());
