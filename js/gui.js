@@ -11,6 +11,7 @@ T.gui = (function () {
         this.domNode = node;
         this.mask = $('#screen');
         this.validator = {};
+        this.formReq = '';
     }
     // box prototype
     Box.prototype = (function () {
@@ -25,6 +26,9 @@ T.gui = (function () {
             var animSpeed = 'fast',
                 node = this.domNode;
             this.setPosition();
+            
+            // TODO clear input fields and error div
+            
             this.mask.fadeIn(animSpeed, function () {
                 node.slideDown(animSpeed);
             });
@@ -45,10 +49,8 @@ T.gui = (function () {
         function displayMsgs(msgs) {
             if (msgs === '' || msgs === undefined) {
                 msgs = this.validator.messages;
-            } else if (msg === false) {
+            } else if (msgs === false) {
                 msgs = '';
-            } else {
-                return;
             }
             var msgBox = this.domNode.children('.error');
             msgBox.hide();

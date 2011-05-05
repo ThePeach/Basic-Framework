@@ -45,7 +45,7 @@ T.utils = (function () {
         types.isAlphaNum = {
             instructions: 'The value can only contain characters and numbers.',
             validate: function (value) {
-                return !/[a-z0-9]/i.test(value);
+                return /^[a-z0-9]+$/i.test(value);
             }
         };        
         /**
@@ -54,7 +54,7 @@ T.utils = (function () {
         types.isEmail = {
             instructions: 'The value is not a valid email.',
             validate: function (value) {
-                return !/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/i.test(value);
+                return /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/i.test(value);
             }
         };
         /**
@@ -100,10 +100,10 @@ T.utils = (function () {
             'hasErrors': hasErrors
         };
     }());
-
-
+    
     // expose API
     return {
-        'Validator': Validator
+        'Validator': Validator,
+        'passwdEncode': passwdEncode
     };
 }());

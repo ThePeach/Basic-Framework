@@ -30,12 +30,26 @@ T.user = (function () {
         });
 
         if (box.validator.validate(retData)) {
-            console.log('we can now fetch the data and return');
+            // encode pwd before sending anything
+            retData.pwd = $.sha1(retData.pwd);
+            // set the request type for the server
+            retData.req = box.reqType;
+            
+            $.post('index.php', retData, function (response) {
+                console.log(response);
+                if (!response.result) {
+                    box.displayMsgs([response.error]);
+                    // FIXME is something missing?
+                } else {
+                    // TODO now we need to save the user data and start fetching
+                    //      the content of the page (user welcome etc)
+                    //      probably via a "callback function"
+                }
+            }, 'json');
         } else {
             // update the error message box
             box.displayMsgs();
         }
-        return retData;
     }
     /**
      * login function, will perform validation and authentication
@@ -53,6 +67,8 @@ T.user = (function () {
      * register function, will perform validation
      */
     function register() {
+        // parse input fields and validate them
+        parseAndValidateForm(this, registerBox);
         return false;
     }
     
@@ -71,6 +87,7 @@ T.user = (function () {
         mainBar.find('a[title="login"]').click(function () {loginBox.show();});
         mainBar.find('a[title="register"]').click(function () {registerBox.show();});
         // loginBox related setup
+        loginBox.reqType = 'login';
         loginBox.domNode.find('.close a').click(function () {loginBox.hide();});
         loginBox.validator = new Validator();
         loginBox.validator.config = {
@@ -79,7 +96,15 @@ T.user = (function () {
         };
         loginBox.domNode.children('form').submit(login);
         // registerBox related setup
+        registerBox.reqType = 'register';
         registerBox.domNode.find('.close a').click(function () {registerBox.hide();});
+        registerBox.validator = new Validator();
+        registerBox.validator.config = {
+            'name': 'isNotEmpty',
+            'email': 'isEmail',
+            'pwd': 'isNotEmpty',
+            'pwd2': 'isNotEmpty'
+        }
         registerBox.domNode.children('form').submit(register);
     }
     
