@@ -45,7 +45,7 @@ T.utils = (function () {
         types.isAlphaNum = {
             instructions: 'The value can only contain characters and numbers.',
             validate: function (value) {
-                return /^[a-z0-9]+$/i.test(value);
+                return (/^[a-z0-9]+$/i).test(value);
             }
         };        
         /**
@@ -54,7 +54,7 @@ T.utils = (function () {
         types.isEmail = {
             instructions: 'The value is not a valid email.',
             validate: function (value) {
-                return /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/i.test(value);
+                return (/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/i).test(value);
             }
         };
         /**
@@ -69,20 +69,19 @@ T.utils = (function () {
                     type = this.config[i];
                     checker = types[type];
                     
-                    if (!type) {
-                        continue; // no need to validate
-                    }
-                    if (!checker) { // problems ahead
-                        throw {
-                            name: 'ValidationError',
-                            message: 'No handler to validate ' + type
-                        };
-                    }
-                    
-                    result_ok = checker.validate(data[i]);
-                    if(!result_ok) {
-                        msg = 'Invalid value for "' + i + '", ' + checker.instructions;
-                        this.messages.push(msg);
+                    if (type) {
+                        if (!checker) { // problems ahead
+                            throw {
+                                name: 'ValidationError',
+                                message: 'No handler to validate ' + type
+                            };
+                        }
+
+                        result_ok = checker.validate(data[i]);
+                        if (!result_ok) {
+                            msg = 'Invalid value for "' + i + '", ' + checker.instructions;
+                            this.messages.push(msg);
+                        }
                     }
                 }
             }
