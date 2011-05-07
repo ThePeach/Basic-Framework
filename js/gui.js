@@ -5,14 +5,21 @@ var T = T || {};
 /**
  * User Interface handling stuff
  */
-T.gui = (function () {    
+T.gui = (function () { 
+    // private vars
     var loginBox = {},
         registerBox = {},
         mainBar = {},
+        mainBarContent = {},
         // import validator
         Validator = T.utils.Validator;
 
-    // box constructor
+    /**
+     * Creates a new Box based on a Jquery selected node
+     * @constructor
+     * 
+     * @param {domNode} node the jquery selected node
+     */
     function Box(node) {
         this.domNode = node;
         this.mask = $('#screen');
@@ -51,6 +58,8 @@ T.gui = (function () {
         /**
          * displays the error message: if there are any in the validator uses
          * them otherwise uses the one passed as actual parameter
+         * 
+         * @param {Array} msgs a list of messages to be displayed
          */
         function displayMsgs(msgs) {
             if (msgs === '' || msgs === undefined) {
@@ -76,6 +85,7 @@ T.gui = (function () {
                 }
             });
         }
+        
         // private functions
 
         /**
@@ -88,6 +98,7 @@ T.gui = (function () {
             };
             this.domNode.css(this.nodeProperties);
         }
+        
         // expose public methods
         return {
             'show': show,
@@ -99,11 +110,14 @@ T.gui = (function () {
     }());
     /**
      * Parses and Validates the form and submits the data
+     * 
+     * @param {Box}      box      a box item containing the form
+     * @param {function} callback the function to be called if the parsing is valid
      */
-    function parseAndValidateForm(domNode, box, callback) {
+    function parseAndValidateForm(box, callback) {
         var retData = {},
             clearPwd = '';
-        $(domNode).find('input').each(function () {
+        box.domNode.find('input').each(function () {
             var curField = $(this);
             if (curField.attr('type') !== 'submit') {
                 retData[curField.attr('name')] = curField.attr('value');
@@ -136,14 +150,27 @@ T.gui = (function () {
         }
     }
     /**
+     * sets the mainbar with a welcome user content
+     */
+    function setUserBar(userName) {
+        // save mainbar content
+        // FIXME to be moved into the init function
+        mainBarContent = mainBar.html();
+        mainBar.find('li').hide();
+        mainBar.find('ul').prepend('<li class="welcome">Welcome <strong>'+userName+'</strong>.</li>');
+        logoutLink = $('<a href="#" title="logout">Logout</a>').click(function () {logout();});
+        mainBar.find('ul').append($('<li/>').addClass('logout').append(logoutLink));
+    }
+    /**
      * login function, will perform validation and authentication
      */
     function login() {
         // parse input fields and validate them
-        parseAndValidateForm(this, loginBox, function (userData) {
+        parseAndValidateForm(loginBox, function (userData) {
             // hide the login box and display the content or fetch it
             loginBox.clear();
             loginBox.hide();
+            setUserBar(userData.name);
             T.user.login(userData);
         });
         return false;
@@ -152,14 +179,22 @@ T.gui = (function () {
      * logout function, will unset the user and restore the mainbar as it was
      */
     function logout() {
+        // restore previous mainbar content
+        mainBar.find('li.welcome, li.logout').remove();
+        mainBar.find('li').show();
+        // ask the user to logout ;)
         T.user.logout();
     }
     /**
      * register function, will perform validation
+     * 
+     * TODO complete
      */
     function register() {
         // parse input fields and validate them
-        parseAndValidateForm(this, registerBox);
+        parseAndValidateForm(registerBox, function (userData) {
+            return false;
+        });
         return false;
     }
     /**
@@ -171,11 +206,11 @@ T.gui = (function () {
         loginBox = new Box($('#loginbox'));
         registerBox = new Box($('#registerbox'));
         
-        mainBar.find('a[title="login"]').click(function () { loginBox.show(); });
-        mainBar.find('a[title="register"]').click(function () { registerBox.show(); });
+        mainBar.find('a[title="login"]').click(function () {loginBox.show();});
+        mainBar.find('a[title="register"]').click(function () {registerBox.show();});
         // loginBox related setup
         loginBox.reqType = 'login';
-        loginBox.domNode.find('.close a').click(function () { loginBox.hide(); });
+        loginBox.domNode.find('.close a').click(function () {loginBox.hide();});
         loginBox.validator = new Validator();
         loginBox.validator.config = {
             'login': 'isEmail',
@@ -184,7 +219,7 @@ T.gui = (function () {
         loginBox.domNode.children('form').submit(login);
         // registerBox related setup
         registerBox.reqType = 'register';
-        registerBox.domNode.find('.close a').click(function () { registerBox.hide(); });
+        registerBox.domNode.find('.close a').click(function () {registerBox.hide();});
         registerBox.validator = new Validator();
         registerBox.validator.config = {
             'name': 'isNotEmpty',
@@ -194,6 +229,7 @@ T.gui = (function () {
         };
         registerBox.domNode.children('form').submit(register);
     }
+    
     // expose widgets
     return {
         'init': init,

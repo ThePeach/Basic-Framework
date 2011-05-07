@@ -14,7 +14,9 @@ T.user = (function () {
      * unregisters the user
      */
     function logout() {        
-        // unregister user
+        name = '';
+        pwd = '';
+        email = '';
     }
     /**
      * register function, will perform validation
@@ -34,12 +36,13 @@ T.user = (function () {
      */    
     function login(userData) {
         name = userData.name;
-        email = userData.email;
         pwd = userData.pwd;
+        email = userData.email;
     }
     
     /** expose methods */
     return {
-        'login': login
+        'login': login,
+        'logout': logout
     };
 }());
