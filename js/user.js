@@ -3,7 +3,7 @@
 var T = T || {};
 
 /**
- * User
+ * The User
  */
 T.user = (function () {
     var name,
@@ -18,19 +18,6 @@ T.user = (function () {
         pwd = '';
         email = '';
     }
-    /**
-     * register function, will perform validation
-     */
-    function register() {
-        return false;
-    }
-    
-//    function loggedIn() {
-//        if (name === null) {
-//            return false;
-//        }
-//        return true;
-//    }
     /**
      * login function, will perform validation and authentication
      */    

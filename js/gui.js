@@ -10,7 +10,6 @@ T.gui = (function () {
     var loginBox = {},
         registerBox = {},
         mainBar = {},
-        mainBarContent = {},
         // import validator
         Validator = T.utils.Validator;
 
@@ -38,12 +37,13 @@ T.gui = (function () {
         function show() {
             var animSpeed = 'fast',
                 node = this.domNode;
+            // do some prep work
             this.setPosition();
-            
-            // TODO clear input fields and error div
-            
+            // do the real show
             this.mask.fadeIn(animSpeed, function () {
-                node.slideDown(animSpeed);
+                node.slideDown(animSpeed, function() {
+                    node.find('input:first').focus();
+                });
             });
         }
         /**
@@ -129,6 +129,10 @@ T.gui = (function () {
             clearPwd = retData.pwd;
             // encode pwd before sending anything
             retData.pwd = $.sha1(retData.pwd);
+            // remove the verification pwd in case it's set
+            if (retData.hasOwnProperty('pwd2')) {
+                delete retData.pwd2;
+            }
             // set the request type for the server
             retData.req = box.reqType;
             
@@ -138,6 +142,10 @@ T.gui = (function () {
                     // FIXME is something missing?
                 } else {
                     // add relevant data for the later user init
+                    if (response.result === true) {
+                        response.result = {};
+                        response.result.name = retData.name;
+                    }
                     response.result.pwd = clearPwd;
                     response.result.email = retData.login;
                     // call the callback function
@@ -153,9 +161,6 @@ T.gui = (function () {
      * sets the mainbar with a welcome user content
      */
     function setUserBar(userName) {
-        // save mainbar content
-        // FIXME to be moved into the init function
-        mainBarContent = mainBar.html();
         mainBar.find('li').hide();
         mainBar.find('ul').prepend('<li class="welcome">Welcome <strong>'+userName+'</strong>.</li>');
         logoutLink = $('<a href="#" title="logout">Logout</a>').click(function () {logout();});
@@ -193,7 +198,10 @@ T.gui = (function () {
     function register() {
         // parse input fields and validate them
         parseAndValidateForm(registerBox, function (userData) {
-            return false;
+            registerBox.clear();
+            registerBox.hide();
+            setUserBar(userData.name);
+            T.user.login(userData);
         });
         return false;
     }
@@ -225,14 +233,13 @@ T.gui = (function () {
             'name': 'isNotEmpty',
             'email': 'isEmail',
             'pwd': 'isNotEmpty',
-            'pwd2': 'isNotEmpty'
+            'pwd2': {'checker': 'sameAs', 'param': 'pwd'}
         };
         registerBox.domNode.children('form').submit(register);
     }
     
     // expose widgets
     return {
-        'init': init,
-        'Box': Box
+        'init': init
     };
 }());

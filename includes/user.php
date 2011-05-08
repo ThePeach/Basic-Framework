@@ -71,7 +71,7 @@ class User extends Model
      *
      * @throws Exception in case something wrong has happened
      */
-    public function register($email, $pwd, $user, $cc) {
+    public function register($email, $pwd, $user, $cc=null) {
         // verify email is not already present in the db
         if (!$this->userExists($email)) {
            throw new Exception('User already existing', 500);
@@ -85,7 +85,7 @@ class User extends Model
         $sql .= '"' . $email . '", ';
         $sql .= '"' . $user . '", ';
         $sql .= '"' . $pwd . '", ';
-        $sql .= $cc . ')';
+        $sql .= (($cc) ? $cc : 'NULL') . ')';
         // insert the values and espect everything's fine
         if (!$this->query($sql)) {
             throw new Exception('Unable to register user', 500);

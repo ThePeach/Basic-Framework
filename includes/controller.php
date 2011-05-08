@@ -47,8 +47,7 @@ class Controller
                     $this->actionRegister(
                         $_POST['login'],
                         $_POST['pwd'],
-                        $_POST['user'],
-                        $_POST['cc']
+                        $_POST['name']
                     );
                 }
             }
@@ -114,21 +113,21 @@ class Controller
      * @param string $user  the user's name
      * @param int    $cc    the credit card number as an integer
      */
-    public function actionRegister($email, $pwd, $user, $cc) {
+    public function actionRegister($email, $pwd, $user) {
+        $this->_jsonResponse['result'] = false;
         // we need to sanitise the input before sending it to the db
         if (filter_var((string)$email, FILTER_VALIDATE_EMAIL)
             || filter_var($pwd, FILTER_SANITIZE_STRING)
             || filter_var($user, FILTER_SANITIZE_STRING)
-            || filter_var($cc, FILTER_VALIDATE_INT)
         ) {
             try {
                 $this->_user->register($email, $pwd, $user, $cc);
+                $this->_jsonResponse['result'] = true;
             } catch(Exception $e) {
                 // we don't really care what has really happened at this point
                 // since the user don't really want to be bothered
                 $this->_jsonResponse['error'] = $e->getMessage();
             }
-            $this->_jsonResponse['result'] = true;
         } else {
             $this->_jsonResponse['error'] = 'Wrong parameters passed';
         }

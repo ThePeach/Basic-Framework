@@ -57,17 +57,36 @@ T.utils = (function () {
                 return (/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/i).test(value);
             }
         };
+        
+        types.sameAs = {
+            instructions: 'The values do not correspond.',
+            validate: function (values) {
+                var i, allOk = true;
+                for (i = 0; i < values.length - 1; i++) {
+                    if (values[i] !== values[i+1]) {
+                        allOk = false;
+                    }
+                }
+                return allOk;
+            }
+        };
         /**
          * Validate the data passed in the form of
          * 'data' => 'value' based on the configuration previously set
          */
         function validate(data) {
-            var i, msg, type, checker, result_ok;
+            var i, msg, type, checker, value, result_ok;
             this.messages = [];
             for (i in data) {
-                if (data.hasOwnProperty(i)) {
+                if (this.config.hasOwnProperty(i)) {
                     type = this.config[i];
-                    checker = types[type];
+                    if (type instanceof Object) {
+                        checker = types[type.checker];
+                        value = [ data[i], data[type.param] ];
+                    } else {
+                        checker = types[type];
+                        value = data[i];
+                    }
                     
                     if (type) {
                         if (!checker) { // problems ahead
@@ -77,7 +96,7 @@ T.utils = (function () {
                             };
                         }
 
-                        result_ok = checker.validate(data[i]);
+                        result_ok = checker.validate(value);
                         if (!result_ok) {
                             msg = 'Invalid value for "' + i + '", ' + checker.instructions;
                             this.messages.push(msg);
