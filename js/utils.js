@@ -57,13 +57,16 @@ T.utils = (function () {
                 return (/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/i).test(value);
             }
         };
-        
+        /**
+         * verifies if the two given inputs are the same
+         * the value shall be in the format: [ value1, value2 ]
+         */
         types.sameAs = {
             instructions: 'The values do not correspond.',
             validate: function (values) {
                 var i, allOk = true;
-                for (i = 0; i < values.length - 1; i++) {
-                    if (values[i] !== values[i+1]) {
+                for (i = 0; i < values.length - 1; i += 1) {
+                    if (values[i] !== values[i + 1]) {
                         allOk = false;
                     }
                 }
@@ -73,6 +76,9 @@ T.utils = (function () {
         /**
          * Validate the data passed in the form of
          * 'data' => 'value' based on the configuration previously set
+         * 
+         * @param {Object} data the data to be checked 
+         *                       in the format { 'var': 'value' }
          */
         function validate(data) {
             var i, msg, type, checker, value, result_ok;
@@ -112,7 +118,7 @@ T.utils = (function () {
         function hasErrors() {
             return this.messages.length !== 0;
         }
-        // expose public api
+        // expose public functions
         return {
             'validate': validate,
             'hasErrors': hasErrors

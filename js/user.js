@@ -20,6 +20,8 @@ T.user = (function () {
     }
     /**
      * login function, will perform validation and authentication
+     * 
+     * @param {Object} userData the user data to be saved internally
      */    
     function login(userData) {
         name = userData.name;

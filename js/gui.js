@@ -41,7 +41,7 @@ T.gui = (function () {
             this.setPosition();
             // do the real show
             this.mask.fadeIn(animSpeed, function () {
-                node.slideDown(animSpeed, function() {
+                node.slideDown(animSpeed, function () {
                     node.find('input:first').focus();
                 });
             });
@@ -159,11 +159,15 @@ T.gui = (function () {
     }
     /**
      * sets the mainbar with a welcome user content
+     * 
+     * @param {String} userName the user name
      */
     function setUserBar(userName) {
+        // create the logout link to be appended
+        var logoutLink = $('<a href="#" title="logout">Logout</a>').click(function () { logout(); });
+        // setup the mainBar
         mainBar.find('li').hide();
-        mainBar.find('ul').prepend('<li class="welcome">Welcome <strong>'+userName+'</strong>.</li>');
-        logoutLink = $('<a href="#" title="logout">Logout</a>').click(function () {logout();});
+        mainBar.find('ul').prepend('<li class="welcome">Welcome <strong>' + userName + '</strong>.</li>');
         mainBar.find('ul').append($('<li/>').addClass('logout').append(logoutLink));
     }
     /**
@@ -192,8 +196,6 @@ T.gui = (function () {
     }
     /**
      * register function, will perform validation
-     * 
-     * TODO complete
      */
     function register() {
         // parse input fields and validate them
