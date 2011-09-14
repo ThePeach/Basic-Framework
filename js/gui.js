@@ -27,9 +27,8 @@ T.gui = (function () {
     }
     // box prototype
     Box.prototype = (function () {
-        var animSpeed = 'fast';
-        // node position properties
-        this.nodeProperties = {};
+        var animSpeed = 'fast',
+            nodeProperties = {};
         // public functions 
         /**
          * Shows the box after greying out the background mask
@@ -92,11 +91,11 @@ T.gui = (function () {
          * Recalculate the position of the box and applies the style to it
          */
         function setPosition() {
-            this.nodeProperties = {
+            nodeProperties = {
                 'top': (this.mask.height() - this.domNode.height()) / 2,
                 'left': (this.mask.width() - this.domNode.width()) / 2
             };
-            this.domNode.css(this.nodeProperties);
+            this.domNode.css(nodeProperties);
         }
         
         // expose public methods
