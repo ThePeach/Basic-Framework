@@ -16,9 +16,9 @@ Class Model
     protected $_db;
 
     /**
-     * Public overridden constructor, sets up the connection to the db
+     * internal connect function, sets up the connection to the db
      */
-    public function __construct() {
+    private function _connect() {
         $this->_db = new Mysql();
         // here we can have an exception and we should handle it properly
         $this->_db->connect();
@@ -31,6 +31,7 @@ Class Model
      * @return false|mixed
      */
     protected function queryScalar($sql) {
+        $this->_connect();
         return $this->_db->queryScalar($sql);
     }
 
@@ -41,6 +42,7 @@ Class Model
      * @return bool|mixed the result of the query
      */
     protected function query($sql) {
+        $this->_connect();
         return $this->_db->query($sql);
     }
 
